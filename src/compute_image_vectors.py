@@ -13,7 +13,7 @@ from sklearn.decomposition import PCA
 img2vec = Img2Vec(cuda=False, model='efficientnet_b3')
 
 print('reading folder...')
-filenames = list(Path('../../onit-iiif-harvest/data/images/D16/').rglob('*.jpg'))
+filenames = list(Path('../../onit-iiif-harvest/data/clipped/D16/').rglob('*.jpg'))
 print(f'{len(filenames)} files')
 
 vectors = []
@@ -24,15 +24,18 @@ for path in filenames:
 
   id = f[f.rfind('/') + 1 : f.rfind('.jpg')]
 
-  img = Image.open(f)
-  img = img.convert('RGB') # this sucks 
+  try:
+    img = Image.open(f)
+    img = img.convert('RGB') # this sucks 
 
-  vec = img2vec.get_vec(img)
+    vec = img2vec.get_vec(img)
 
-  row = [ id ]
-  row.extend(vec)
+    row = [ id ]
+    row.extend(vec)
 
-  vectors.append(row)
+    vectors.append(row)
+  except Exception as e:
+    print('Error loading image: ' + f)
   
   bar.next()
 
@@ -45,7 +48,7 @@ with open('results.csv', 'w') as outfile:
 
 print('reducing dimensions')
 
-pca = PCA(n_components=128, svd_solver='full')
+pca = PCA(n_components=256, svd_solver='full')
 vec_reduced = pca.fit_transform(np.array([ row[1:] for row in vectors ]))
 vec_reduced = [ row.tolist() for row in vec_reduced ]
 
@@ -55,7 +58,7 @@ for idx, vec in enumerate(vec_reduced):
   id = vectors[idx][0]
   vec_reduced[idx].insert(0, id)
 
-with open('results_128.csv', 'w') as outfile:  
+with open('results_256.csv', 'w') as outfile:  
   writer = csv.writer(outfile)
   writer.writerows(vec_reduced)
 

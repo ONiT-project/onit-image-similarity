@@ -1,2 +1,3 @@
-# onit-image-similarity
-img2vec image similarity for ONiT
+# ONiT Image Similarity
+
+img2vec image similarity helper scripts for ONiT.
