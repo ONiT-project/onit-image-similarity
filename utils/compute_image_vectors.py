@@ -13,7 +13,7 @@ from sklearn.decomposition import PCA
 img2vec = Img2Vec(cuda=False, model='efficientnet_b3')
 
 print('reading folder...')
-filenames = list(Path('../../onit-iiif-harvest/data/clipped/D16/').rglob('*.jpg'))
+filenames = list(Path('../../onit-iiif-harvest/data/clipped/D17/').rglob('*.jpg'))
 print(f'{len(filenames)} files')
 
 vectors = []

@@ -4,7 +4,7 @@ import os
 
 records = []
 
-with open('../data/D16_clipped_256d.csv', 'r') as infile:
+with open('../data/D17_clipped_256d.csv', 'r') as infile:
   reader = csv.reader(infile)
 
   for row in reader:
