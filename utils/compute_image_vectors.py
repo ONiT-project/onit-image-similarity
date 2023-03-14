@@ -1,24 +1,29 @@
 import csv
-import glob
+import json
 import numpy as np
+import os
 from pathlib import Path
 from progress.bar import Bar
 from PIL import Image
 from img2vec_pytorch import Img2Vec
 from sklearn.decomposition import PCA
+from iiif_correspondence import load_corresponence
 
 # https://github.com/christiansafka/img2vec
 
 # EfficientNet-B3 produces vectors with 1536 dimensions 
 img2vec = Img2Vec(cuda=False, model='efficientnet_b3')
 
-print('reading folder...')
+print('Reading folder...')
+
 filenames = list(Path('../../onit-iiif-harvest/data/clipped/D17/').rglob('*.jpg'))
+
 print(f'{len(filenames)} files')
 
 vectors = []
 
 bar = Bar('Processing', max=len(filenames))
+
 for path in filenames:
   f = str(path.resolve())
 
@@ -40,26 +45,57 @@ for path in filenames:
   bar.next()
 
 bar.finish()
-print('writing results to file')
 
-with open('results.csv', 'w') as outfile:
-  writer = csv.writer(outfile)
-  writer.writerows(vectors)
-
-print('reducing dimensions')
+print('Reducing dimensions')
 
 pca = PCA(n_components=256, svd_solver='full')
 vec_reduced = pca.fit_transform(np.array([ row[1:] for row in vectors ]))
 vec_reduced = [ row.tolist() for row in vec_reduced ]
 
-print('writing results to file')
+print('Loading IIIF correspondence table')
+iiif = load_corresponence()
+
+records = []
 
 for idx, vec in enumerate(vec_reduced):
   id = vectors[idx][0]
-  vec_reduced[idx].insert(0, id)
 
-with open('results_256.csv', 'w') as outfile:  
-  writer = csv.writer(outfile)
-  writer.writerows(vec_reduced)
+  barcode = id[:id.index('_')]
+
+  records.append({
+    'id': id,
+    'local_url': 'http://localhost/images/' + barcode + '/' + id + '.jpg',
+    'iiif_url': iiif[id + '.jpg'], 
+    'vec': vec
+  })
+
+print('Writing results to file')
+
+with open('results_256.jsonl', 'a') as outfile:  
+
+  for record in records:
+    outfile.write(json.dumps(record) + os.linesep)
 
 print('done')
+
+"""
+  for row in reader:
+    filename = row[0]
+
+    vector = [ float(x) for x in row[1:] ]
+
+    barcode = filename[:filename.index('_')]
+
+    record = {
+      'reproduction': 'http://localhost/images/' + barcode + '/' + filename + '.jpg',
+      'vec': vector
+    }
+
+    records.append(record)
+
+with open('results.jsonl', 'a') as outfile:
+
+  for record in records:
+    outfile.write(json.dumps(record) + os.linesep)
+
+print('Done')"""

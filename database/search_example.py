@@ -11,7 +11,7 @@ def search_nearest_neighbours(id, k=K):
   query = {
     'filter': {
       'must': [
-        { 'key': 'title', 'match': { 'value': id } }
+        { 'key': 'id', 'match': { 'value': id } }
       ]
     },
     'with_vector': True
@@ -40,6 +40,6 @@ def search_nearest_neighbours(id, k=K):
 Run sample search
 """
 
-neighbours = search_nearest_neighbours('Z15957400X_00125_page125_01')
+neighbours = search_nearest_neighbours('Z180620103_00006_page6_01')
 print(neighbours)
 

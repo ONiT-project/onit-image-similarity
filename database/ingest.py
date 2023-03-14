@@ -1,4 +1,3 @@
-import gzip
 import json
 import requests
 import uuid
@@ -9,7 +8,7 @@ headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 
 records = []
 
-with gzip.open('../data/D17_clipped_256d.jsonl.gz') as f:
+with open('../data/vectors/D17_256d.jsonl') as f:
   for line in f:
     # id, url, title, vec
     records.append(json.loads(line))
@@ -24,8 +23,8 @@ for rec in records:
     'vector': rec['vec'],
     'payload': { 
       'id': rec['id'],
-      'url': rec['url'],
-      'title': rec['title']
+      'local_url': rec['local_url'],
+      'iiif_url': rec['iiif_url']
     }
   })
 

@@ -1,3 +1,4 @@
-data/*.gz
+__pycache__
+data/**/*.jsonl
 database/data/*
 !.gitkeep

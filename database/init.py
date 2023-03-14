@@ -32,9 +32,4 @@ response = requests.post(QDRANT_URL + '/index', headers=headers, data=json.dumps
   'field_schema': 'keyword'
 }))
 
-response = requests.post(QDRANT_URL + '/index', headers=headers, data=json.dumps({
-  'field_name': 'title', 
-  'field_schema': 'keyword'
-}))
-
 print('Done. Go to ' + QDRANT_URL)
