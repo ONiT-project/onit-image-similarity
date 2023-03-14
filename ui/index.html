@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>qdrant</title>
+  </head>
+  <body>
+    <form id="search">
+      <input type="text" value="Z15629930X_00002_page2_01">
+    </form>
+
+    <div id="results"></div>
+    <script>
+      function queryNeighbours(id, k = 100) {
+        var query = {
+          filter: {
+            must: [
+              { key: "id", match: { value: id } },
+            ],
+          },
+          with_vector: true,
+        };
+
+        return fetch('http://localhost:6333/collections/onit/points/scroll', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(query),
+        }).then(res => res.json()).then(data => {
+          var result = data.result.points[0];
+
+          if (result) {
+            return fetch('http://localhost:6333/collections/onit/points/search', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                vector: result.vector,
+                limit: k + 1, // Response *may* include the item itself, which we'll filter
+                with_payload: true
+              })
+            }).then(res => res.json()).then(data => {
+              return data;
+            })
+          } else {
+            console.log('Not found: ' + id);
+          }
+        });
+      }
+
+      window.onload = function() {
+        var search = document.getElementById('search');
+
+        search.addEventListener('submit', function(evt) {
+          evt.preventDefault();
+
+          var query = document.querySelector('#search input').value;
+
+          queryNeighbours(query).then(function(res) {
+            var { result } = res;
+
+            var container = document.getElementById('results');
+
+            result.forEach(function(r) {
+              console.log(r);
+
+              var img = document.createElement('IMG')
+              img.src = r.payload.iiif_url;
+              img.title = r.score;
+
+              container.append(img);
+            });
+          })
+        });
+      }
+    </script>
+  </body>
+</html>
