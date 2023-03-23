@@ -6,7 +6,7 @@ IMAGES_TO_QUERY = '../data/source_data/Liste_automatisch_herauszufilternder_Bild
 
 QDRANT_QUERY_URL = 'http://localhost:6333/collections/onit/points'
 
-N = 100
+N = 50
 
 all_neighbours = []
 
