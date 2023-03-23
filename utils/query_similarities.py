@@ -38,11 +38,11 @@ def query_one_image(id):
     response = requests.post(f'{QDRANT_QUERY_URL}/search', json=query)
 
     if response.status_code == 200:
-      neighbours = [obj['payload'] for obj in response.json()['result']]
+      neighbours = response.json()['result']
 
       all_neighbours.append({
         'reference': record['payload'],
-        'neighbours': [r  for r in neighbours if r['id'] != record['payload']['id']] 
+        'neighbours': [r['payload'] | { 'score': r['score'] } for r in neighbours if r['payload']['id'] != record['payload']['id']] 
       })
 
     else: 
