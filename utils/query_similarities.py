@@ -2,11 +2,13 @@ import csv
 import json
 import requests
 
-IMAGES_TO_QUERY = '../data/source_data/D17_IIIF.csv'
+IMAGES_TO_QUERY = '../data/source_data/Liste_automatisch_herauszufilternder_Bilder.csv'
 
 QDRANT_QUERY_URL = 'http://localhost:6333/collections/onit/points'
 
 N = 100
+
+all_neighbours = []
 
 def query_one_image(id):
   print(f'Querying: {id}')
@@ -33,14 +35,16 @@ def query_one_image(id):
       'with_payload': True
     }
     
-    response = requests.post(f'{QDRANT_QUERY_URL}/search', json= query)
+    response = requests.post(f'{QDRANT_QUERY_URL}/search', json=query)
 
     if response.status_code == 200:
-      records = [obj['payload'] for obj in response.json()['result']]
+      neighbours = [obj['payload'] for obj in response.json()['result']]
 
-      # TODO
-      print(records)
-      
+      all_neighbours.append({
+        'reference': record['payload'],
+        'neighbours': [r  for r in neighbours if r['id'] != record['payload']['id']] 
+      })
+
     else: 
       print('Error fetching neighbours')
 
@@ -48,17 +52,24 @@ def query_one_image(id):
     print('Error fetching record')
 
   
+"""
+Script starts here: query all files in the list...
+"""
 with open(IMAGES_TO_QUERY, 'r') as file:
   reader = csv.reader(file)
 
-  next(reader, None)  # skip the headers
-
   for row in reader:
     # Rows: barcode, id, label, iiif, filename
-    filename = row[4]
+    filename = row[0]
 
     identifier = filename[filename.rfind('/') + 1 : filename.rfind('.jpg')]
     
     query_one_image(identifier)
+
+"""
+...and write results to JSON file
+"""
+with open('../data/neighbours/neighbours.json', 'w') as file:
+  json.dump(all_neighbours, file, indent=2)
 
     
