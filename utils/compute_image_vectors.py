@@ -1,4 +1,3 @@
-import csv
 import json
 import numpy as np
 import os
@@ -77,25 +76,3 @@ with open('results_256.jsonl', 'a') as outfile:
     outfile.write(json.dumps(record) + os.linesep)
 
 print('done')
-
-"""
-  for row in reader:
-    filename = row[0]
-
-    vector = [ float(x) for x in row[1:] ]
-
-    barcode = filename[:filename.index('_')]
-
-    record = {
-      'reproduction': 'http://localhost/images/' + barcode + '/' + filename + '.jpg',
-      'vec': vector
-    }
-
-    records.append(record)
-
-with open('results.jsonl', 'a') as outfile:
-
-  for record in records:
-    outfile.write(json.dumps(record) + os.linesep)
-
-print('Done')"""
