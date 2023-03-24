@@ -42,6 +42,13 @@ folder contains a `docker-compose.yml` file which starts an empty Qdrant instanc
 
 ## Bulk Similarity Utility
 
+The script [utils/query_similarities.py](blob/main/utils/query_similarities.py) takes a list of image IDs as input, and runs a bulk-search
+for N (currently configured to 50) nearest neighbours in Qdrant. The output is written to a [JSON file](https://github.com/travelogues/onit-image-similarity/blob/main/data/neighbours/neighbours.json).
 
+The JSON file contains an array of `reference` images, and their `neighbours`. The script includes the `score` for each neighbour, a number delivered by Qdrant as a measure of relative similarity.
+
+### HTML Preview
+
+The script [utils/generate_html_preview.py](blob/main/utils/generate_html_preview.py) takes the JSON similarity result as input, and generates an HTML preview file.
  
 
