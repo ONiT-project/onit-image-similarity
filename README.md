@@ -15,7 +15,7 @@ project-specific conventions and schemas baked into the scripts. Use at your own
 
 ## Generating Image Embedding Vectors
 
-The script [utils/compute_image_vector.py](blob/main/utils/compute_image_vectors.py) performs the following steps:
+The script [utils/compute_image_vectors.py](blob/main/utils/compute_image_vectors.py) performs the following steps:
 
 - Starting from a configured folder path, it loads all `*.jpg` images from the folder and its subfolders. __Images are not included in this repository!__
 - For each image, it generates an embedding vector (using `efficientnet_b3`).
